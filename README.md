@@ -1,2 +1,2 @@
-# Extension-Randomizer
-Adds ability to randomize API settings sliders with every generation.
+# ST-KoboldAPI-Loader
+Makes call to (WIP) KoboldAPI Loader

@@ -1,13 +1,13 @@
 {
-    "display_name": "Parameter Randomizer",
+    "display_name": "KoboldAPI Loader",
     "loading_order": 15,
     "requires": [],
     "optional": [],
     "js": "index.js",
     "css": "style.css",
-    "author": "Cohee#1207",
+    "author": "kawaiiwolf",
     "version": "1.0.0",
     "generate_interceptor": "randomizerInterceptor",
-    "homePage": "https://github.com/SillyTavern/Extension-Randomizer",
+    "homePage": "https://git.kawaiiwolf.com/wolf/ST-KoboldAPI-Loader",
     "auto_update": true
 }
