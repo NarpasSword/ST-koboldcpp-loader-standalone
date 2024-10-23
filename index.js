@@ -44,7 +44,7 @@ jQuery(() => {
         </div>
     </div>`;
 
-    $('extensions_settings').append($(html));
+    $('#extensions_settings').append(html);
     
     /*
     if (Object.keys(extension_settings["koboldapi"]).length === 0) 
