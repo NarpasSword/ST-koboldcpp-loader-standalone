@@ -59,9 +59,9 @@ function onAPIKey()
 async function fetchKoboldModels()
 {
     const response = await fetch(`${extension_settings.koboldapi.url}/list`)
-      .then((response) => response.json())
-      .then((list) => {
-        kobold_models=list;
+        .then((response) => response.json())
+        .then((list) => {
+            kobold_models=list;
     });
 /*    if (response.ok)
     {
@@ -138,5 +138,9 @@ jQuery(async function() {
                 'search',
                 $(this).val(),
             );
+    });
+
+    $('#kobold_api_load_button').on('click', function() {
+        console.log(kobold_models);
     });
 });
