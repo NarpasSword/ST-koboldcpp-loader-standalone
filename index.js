@@ -42,7 +42,7 @@ async function fetchKoboldModels()
         console.error(`Request to /list failed with a statuscode of ${response.status}:\n${response.statusText}`);
 }
 
-jQuery(() => async function() {
+jQuery(async function() {
     const html = `
     <div class="koboldapi_settings">
         <div class="inline-drawer">
