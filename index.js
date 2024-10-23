@@ -55,10 +55,10 @@ jQuery(async function() {
                     <h4>KoboldCPP Switch API URL</h4>
                     <input id="kobold_api_url" class="text_pole textarea_compact" type="text" />
                     <h4>KoboldAPI API Key</h4>
-
-                    <input id="kobold_api_apikey" name="kobold_api_apikey" class="text_pole flex1 wide100p" maxlength="500" size="35" type="text" autocomplete="off">
-                    <div id="kobold_api_apikey_clear" title="Clear your admin key" data-i18n="[title]Clear your admin key" class="menu_button fa-solid fa-circle-xmark clear-api-key" data-key="admin_key_tabby_ext_ext">
-
+                    <div class="flex-container">
+                        <input id="kobold_api_apikey" name="kobold_api_apikey" class="text_pole flex1 wide100p" maxlength="500" size="35" type="text" autocomplete="off">
+                        <div id="kobold_api_apikey_clear" title="Clear your admin key" data-i18n="[title]Clear your admin key" class="menu_button fa-solid fa-circle-xmark clear-api-key" data-key="admin_key_tabby_ext_ext">
+                    </div>
                 </div>
                 <div class="flex-container">
                     <h4>LLM Models</h4>
