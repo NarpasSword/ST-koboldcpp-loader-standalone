@@ -44,14 +44,14 @@ jQuery(() => {
         </div>
     </div>`;
 
-    document.getElementById('extensions_settings').append(html);
+    $('extensions_settings').append($(html));
     if (Object.keys(extension_settings["koboldapi"]).length === 0) 
     {
         extension_settings.koboldapi = { "url": "" };
         saveSettingsDebounced();
     }
     $('#kobold_api_url').val(extension_settings.koboldapi.url).on('input',onKoboldURLChanged);
-    
+
     /*
     $('#ai_response_configuration .range-block-counter').each(addRandomizeButton);
     $('#randomizer_enabled').on('input', onRandomizerEnabled);
