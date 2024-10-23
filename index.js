@@ -59,8 +59,12 @@ function onAPIKey()
 
 async function fetchKoboldModels()
 {
-    const response = await fetch(`${extension_settings.koboldapi.url}/list`);
-    if (response.ok)
+    const response = await fetch(`${extension_settings.koboldapi.url}/list`)
+    .then((response) => response.json())
+    .then((list) => {
+        console.log(list);
+    });
+/*    if (response.ok)
     {
         kobold_models = response.json();
         console.log(response);
@@ -69,6 +73,7 @@ async function fetchKoboldModels()
     }   
     else
         console.error(`Request to /list failed with a statuscode of ${response.status}:\n${response.statusText}`);
+*/
 }
 
 
