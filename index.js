@@ -7,8 +7,13 @@ function onKoboldURLChanged() {
 }
 
 function onKoboldContextChanged() {
-    console.log("Context Changed: " + $(this).val());
-    extension_settings.koboldapi.context = $(this).val();
+    let v = $(this).val();
+    if (v == "") return;
+    if (!(v===parseInt(v))) {
+        v = 8;
+        $(this).val(8);
+    }
+    extension_settings.koboldapi.context = v;
     saveSettingsDebounced();
 }
 
@@ -32,7 +37,6 @@ jQuery(() => {
                 <div class="flex-container">
                     <h4>Model Select</h4>
                     <div id="kobold_api_model_reload" title="Refresh model list" data-i18n="[title]Refresh model list" class="menu_button fa-lg fa-solid fa-repeat"></div>
-                    <h4>Context Tokens (in 1024 chunks)</h4>
                 </div>
                 <div class="flex-container flexFlowColumn">
                     <input id="kobold_api_model_list" name="model_list" class="text_pole flex1 wide100p" placeholder="Model name here" maxlength="100" size="35" value="" autocomplete="off">
@@ -49,18 +53,15 @@ jQuery(() => {
 
     $('#extensions_settings').append(html);
     
-    if (! extension_settings.koboldapi ) 
-    {
+    if (! extension_settings.koboldapi ) {
         extension_settings.koboldapi = { "url": "", "context": 8 };
         saveSettingsDebounced();
     } 
-    if ( ! extension_settings.koboldapi.url )
-    {
+    if ( ! extension_settings.koboldapi.url ) {
         extension_settings.koboldapi.url = "";
         saveSettingsDebounced();
     } 
-    if ( ! extension_settings.koboldapi.context )
-    {
+    if ( ! extension_settings.koboldapi.context ) {
         extension_settings.koboldapi.context = 8;
         saveSettingsDebounced();
     } 
