@@ -47,15 +47,18 @@ jQuery(async function() {
     <div class="koboldapi_settings">
         <div class="inline-drawer">
             <div class="inline-drawer-toggle inline-drawer-header">
-                <b>KoboldAPI Loader</b>
+                <b>KoboldCPP Switch API</b>
                 <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
             </div>
             <div class="inline-drawer-content">
                 <div class="flex-container flexFlowColumn">
-                    <h4>KoboldAPI URL</h4>
+                    <h4>KoboldCPP Switch API URL</h4>
                     <input id="kobold_api_url" class="text_pole textarea_compact" type="text" />
                     <h4>KoboldAPI API Key</h4>
-                    <input id="kobold_api_apikey" class="text_pole textarea_compact" type="text" />
+
+                    <input id="kobold_api_apikey" name="kobold_api_apikey" class="text_pole flex1 wide100p" maxlength="500" size="35" type="text" autocomplete="off">
+                    <div id="kobold_api_apikey_clear" title="Clear your admin key" data-i18n="[title]Clear your admin key" class="menu_button fa-solid fa-circle-xmark clear-api-key" data-key="admin_key_tabby_ext_ext">
+
                 </div>
                 <div class="flex-container">
                     <h4>LLM Models</h4>
