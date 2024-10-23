@@ -18,6 +18,21 @@ function onNumbersOnly(event){
     }
 }
 
+async function loadSettings()
+{
+    if (! extension_settings.koboldapi )
+        extension_settings.koboldapi = { "url": "", "context": 8 };
+    if ( ! extension_settings.koboldapi.url )
+        extension_settings.koboldapi.url = "";
+    if ( ! extension_settings.koboldapi.context )
+        extension_settings.koboldapi.context = 8;
+
+    // get api key
+    // try loading model list
+
+    saveSettingsDebounced();
+}
+
 async function fetchKoboldModels()
 {
     const response = await fetch(`${extension_settings.koboldapi.url}/list`);
@@ -27,7 +42,7 @@ async function fetchKoboldModels()
         console.error(`Request to /list failed with a statuscode of ${response.status}:\n${response.statusText}`);
 }
 
-jQuery(() => {
+jQuery(() => async function() {
     const html = `
     <div class="koboldapi_settings">
         <div class="inline-drawer">
@@ -43,9 +58,11 @@ jQuery(() => {
                 <div class="flex-container flexFlowColumn">
                     <label>KoboldAPI URL</label>
                     <input id="kobold_api_url" class="text_pole textarea_compact" type="text" />
+                    <label>KoboldAPI API Key</label>
+                    <input id="kobold_api_apikey" class="text_pole textarea_compact" type="text" />
                 </div>
                 <div class="flex-container">
-                    <h4>Model Select</h4>
+                    <h4>LLM Models</h4>
                     <div id="kobold_api_model_reload" title="Refresh model list" data-i18n="[title]Refresh model list" class="menu_button fa-lg fa-solid fa-repeat"></div>
                 </div>
                 <div class="flex-container flexFlowColumn">
@@ -63,18 +80,7 @@ jQuery(() => {
 
     $('#extensions_settings').append(html);
     
-    if (! extension_settings.koboldapi ) {
-        extension_settings.koboldapi = { "url": "", "context": 8 };
-        saveSettingsDebounced();
-    } 
-    if ( ! extension_settings.koboldapi.url ) {
-        extension_settings.koboldapi.url = "";
-        saveSettingsDebounced();
-    } 
-    if ( ! extension_settings.koboldapi.context ) {
-        extension_settings.koboldapi.context = 8;
-        saveSettingsDebounced();
-    }
+    await loadSettings();
         
     $('#kobold_api_url').val(extension_settings.koboldapi.url).on('input',onKoboldURLChanged);
     $('#kobold_api_model_context')
