@@ -27,10 +27,31 @@ async function loadSettings()
     if ( ! extension_settings.koboldapi.context )
         extension_settings.koboldapi.context = 8;
 
-    // get api key
+    setAPIKeyPlaceholder();
     // try loading model list
 
     saveSettingsDebounced();
+}
+
+function setAPIKeyPlaceholder()
+{
+    let api = localStorage.getItem('KoboldCPP_Loder_APIKey');
+    const placeholder = api ? '✔️ Key found' : '❌ Missing key';
+    $('#kobold_api_apikey').attr('placeholder', placeholder);
+}
+
+function onClearAPIKey()
+{
+    localStorage.removeItem('KoboldCPP_Loder_APIKey');
+    setAPIKeyPlaceholder();
+}
+
+function onAPIKey()
+{
+    const value = $(this).val();
+    if (value) {
+        localStorage.setItem('KoboldCPP_Loder_APIKey', value);
+    }
 }
 
 async function fetchKoboldModels()
@@ -41,6 +62,8 @@ async function fetchKoboldModels()
     else
         console.error(`Request to /list failed with a statuscode of ${response.status}:\n${response.statusText}`);
 }
+
+
 
 jQuery(async function() {
     const html = `
@@ -87,4 +110,6 @@ jQuery(async function() {
       .on('input',onKoboldContextChanged)
       .on('keyup',onNumbersOnly);
     $('#kobold_api_model_reload').on('click', fetchKoboldModels);
+    $('#kobold_api_apikey').on('input', onAPIKey);
+    $('#kobold_api_apikey_clear').on('click', onClearAPIKey);
 });
