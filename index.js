@@ -1,6 +1,9 @@
 import { saveSettingsDebounced } from '../../../../script.js';
 import { extension_settings } from '../../../extensions.js';
 
+// Variable for saved models.
+let kobold_models = [];
+
 function onKoboldURLChanged() {
     extension_settings.koboldapi.url = $(this).val();
     saveSettingsDebounced();
@@ -58,7 +61,7 @@ async function fetchKoboldModels()
 {
     const response = await fetch(`${extension_settings.koboldapi.url}/list`);
     if (response.ok)
-        console.log(response.json());
+        kobold_models = response.json();
     else
         console.error(`Request to /list failed with a statuscode of ${response.status}:\n${response.statusText}`);
 }
@@ -112,4 +115,19 @@ jQuery(async function() {
     $('#kobold_api_model_reload').on('click', fetchKoboldModels);
     $('#kobold_api_apikey').on('input', onAPIKey);
     $('#kobold_api_apikey_clear').on('click', onClearAPIKey);
+
+    $('#model_list')
+    .autocomplete({
+        source: (_, response) => {
+            return response(kobold_models);
+        },
+        minLength: 0,
+    })
+    .focus(function () {
+        $(this)
+            .autocomplete(
+                'search',
+                $(this).val(),
+            );
+    });
 });
