@@ -61,7 +61,10 @@ async function fetchKoboldModels()
 {
     const response = await fetch(`${extension_settings.koboldapi.url}/list`);
     if (response.ok)
+    {
         kobold_models = response.json();
+        console.log(kobold_models);
+    }   
     else
         console.error(`Request to /list failed with a statuscode of ${response.status}:\n${response.statusText}`);
 }
