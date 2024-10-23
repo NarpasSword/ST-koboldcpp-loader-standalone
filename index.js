@@ -7,12 +7,15 @@ function onKoboldURLChanged() {
 }
 
 function onKoboldContextChanged() {
-    if (isNaN($(this).val())) {
-        v = 8;
-        $(this).val(8);
-    }
     extension_settings.koboldapi.context = v;
     saveSettingsDebounced();
+}
+
+function onNumbersOnly(event){
+    var v = this.value;
+    if($.isNumeric(v) === false) {
+         this.value = this.value.slice(0,-1);
+    }
 }
 
 jQuery(() => {
@@ -65,6 +68,9 @@ jQuery(() => {
     } 
         
     $('#kobold_api_url').val(extension_settings.koboldapi.url).on('input',onKoboldURLChanged);
-    $('#kobold_api_model_context').val(extension_settings.koboldapi.context).on('input',onKoboldContextChanged);
+    $('#kobold_api_model_context')
+      .val(extension_settings.koboldapi.context)
+      .on('input',onKoboldContextChanged)
+      .on('keyup',onNumbersOnly);
 
 });
