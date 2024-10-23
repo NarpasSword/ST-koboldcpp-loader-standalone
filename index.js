@@ -51,14 +51,10 @@ jQuery(async function() {
                 <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
             </div>
             <div class="inline-drawer-content">
-                <div>
-                    Some text description and such !
-                </div>
-                <br>
                 <div class="flex-container flexFlowColumn">
-                    <label>KoboldAPI URL</label>
+                    <h4>KoboldAPI URL</h4>
                     <input id="kobold_api_url" class="text_pole textarea_compact" type="text" />
-                    <label>KoboldAPI API Key</label>
+                    <h4>KoboldAPI API Key</h4>
                     <input id="kobold_api_apikey" class="text_pole textarea_compact" type="text" />
                 </div>
                 <div class="flex-container">
