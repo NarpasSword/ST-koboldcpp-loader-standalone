@@ -1,13 +1,11 @@
 {
     "display_name": "KoboldAPI Loader",
-    "loading_order": 15,
+    "loading_order": 12,
     "requires": [],
     "optional": [],
     "js": "index.js",
     "css": "style.css",
     "author": "kawaiiwolf",
-    "version": "1.0.0",
-    "generate_interceptor": "randomizerInterceptor",
-    "homePage": "https://git.kawaiiwolf.com/wolf/ST-KoboldAPI-Loader",
-    "auto_update": true
+    "version": "0.0.1",
+    "homePage": "https://git.kawaiiwolf.com/wolf/ST-KoboldAPI-Loader"
 }

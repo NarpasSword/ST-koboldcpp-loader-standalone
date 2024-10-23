@@ -105,6 +105,36 @@ window['randomizerInterceptor'] = (function () {
 
 jQuery(() => {
     const html = `
+    <div class="koboldapi_settings">
+        <div class="inline-drawer">
+            <div class="inline-drawer-toggle inline-drawer-header">
+                <b>KoboldAPI Loader</b>
+                <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
+            </div>
+            <div class="inline-drawer-content">
+                <div>
+                    Some text description and such !
+                </div>
+                <br>
+                <div class="flex-container flexFlowColumn">
+                    <label>KoboldAPI URL</label>
+                    <input id="kobold_api_url" class="text_pole textarea_compact" type="text" />
+                </div>
+                <div class="flex-container">
+                    <h4>Model Select</h4>
+                    <div id="reload_model_list_button" title="Refresh model list" data-i18n="[title]Refresh model list" class="menu_button fa-lg fa-solid fa-repeat"></div>
+                </div>
+                <div class="flex-container flexFlowColumn">
+                    <input id="model_list" name="model_list" class="text_pole flex1 wide100p" placeholder="Model name here" maxlength="100" size="35" value="" autocomplete="off">
+                    <input id="draft_model_list" name="draft_model_list" class="text_pole flex1 wide100p" placeholder="Draft model name here" maxlength="100" size="35" value="" autocomplete="off">
+                </div>
+                <div class="flex-container">
+                    <input id="load_model_button" class="menu_button" type="submit" value="Load" />
+                    <input id="unload_model_button" class="menu_button" type="button" value="Unload" />
+                </div>
+            </div>
+        </div>
+    </div>    
     <div class="randomizer_settings">
         <div class="inline-drawer">
             <div class="inline-drawer-toggle inline-drawer-header">
