@@ -14,8 +14,17 @@ function onKoboldContextChanged() {
 function onNumbersOnly(event){
     var v = this.value;
     if($.isNumeric(v) === false) {
-         this.value = this.value.slice(0,-1);
+         this.value = extension_settings.koboldapi.context;
     }
+}
+
+async function fetchKoboldModels()
+{
+    const response = await fetch(`${extension_settings.koboldapi.url}/list`);
+    if (response.ok)
+        console.log(response.json());
+    else
+        console.error(`Request to /list failed with a statuscode of ${response.status}:\n${response.statusText}`);
 }
 
 jQuery(() => {
@@ -65,12 +74,12 @@ jQuery(() => {
     if ( ! extension_settings.koboldapi.context ) {
         extension_settings.koboldapi.context = 8;
         saveSettingsDebounced();
-    } 
+    }
         
     $('#kobold_api_url').val(extension_settings.koboldapi.url).on('input',onKoboldURLChanged);
     $('#kobold_api_model_context')
       .val(extension_settings.koboldapi.context)
       .on('input',onKoboldContextChanged)
       .on('keyup',onNumbersOnly);
-
+    $('#kobold_api_model_reload').on('click', fetchKoboldModels);
 });
