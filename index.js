@@ -9,7 +9,7 @@ function onKoboldURLChanged() {
 function onKoboldContextChanged() {
     let v = $(this).val();
     if (v == "") return;
-    if (!(v===(""+parseInt(v)))) {
+    if (isNaN(v)) {
         v = 8;
         $(this).val(8);
     }
