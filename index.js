@@ -63,7 +63,9 @@ async function fetchKoboldModels()
     if (response.ok)
     {
         kobold_models = response.json();
+        console.log(response);
         console.log(kobold_models);
+        console.log(kobold_models.value)
     }   
     else
         console.error(`Request to /list failed with a statuscode of ${response.status}:\n${response.statusText}`);
