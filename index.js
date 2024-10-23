@@ -31,9 +31,8 @@ async function loadSettings()
         extension_settings.koboldapi.context = 8;
 
     setAPIKeyPlaceholder();
-    // try loading model list
-
     saveSettingsDebounced();
+    await fetchKoboldModels();
 }
 
 function setAPIKeyPlaceholder()
@@ -60,9 +59,9 @@ function onAPIKey()
 async function fetchKoboldModels()
 {
     const response = await fetch(`${extension_settings.koboldapi.url}/list`)
-    .then((response) => response.json())
-    .then((list) => {
-        console.log(list);
+      .then((response) => response.json())
+      .then((list) => {
+        kobold_models=list;
     });
 /*    if (response.ok)
     {
