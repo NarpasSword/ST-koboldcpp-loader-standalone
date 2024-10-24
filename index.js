@@ -62,20 +62,8 @@ async function fetchKoboldModels()
         .then((response) => response.json())
         .then((list) => {
             kobold_models=list;
-    });
-/*    if (response.ok)
-    {
-        kobold_models = response.json();
-        console.log(response);
-        console.log(kobold_models);
-        console.log(kobold_models.value)
-    }   
-    else
-        console.error(`Request to /list failed with a statuscode of ${response.status}:\n${response.statusText}`);
-*/
+        }).catch(error => console.log("KoboldCCP Switch API List Failed: " + error.message));
 }
-
-
 
 jQuery(async function() {
     const html = `
@@ -138,12 +126,31 @@ jQuery(async function() {
                 'search',
                 $(this).val(),
             );
-    })
-    .on('change', function() {
-        $(this).blur();
     });
 
     $('#kobold_api_load_button').on('click', function() {
-        console.log(kobold_models);
+        fetch(`${extension_settings.koboldapi.url}/load`, {
+            method: "POST",
+            body: JSON.stringify({
+              model: $('#kobold_api_model_list').val(),
+              context: $('#kobold_api_model_context').val(),
+              apikey: localStorage.getItem('KoboldCPP_Loder_APIKey');
+            }),
+            headers: {
+              "Content-type": "application/json; charset=UTF-8"
+            }
+        }).catch(error => console.log("KoboldCCP Switch API List Failed: " + error.message));
     });
+
+    $('#kobold_api_unload_button').on('click', function() {
+        fetch(`${extension_settings.koboldapi.url}/unload`, {
+            method: "POST",
+            body: JSON.stringify({
+              apikey: localStorage.getItem('KoboldCPP_Loder_APIKey');
+            }),
+            headers: {
+              "Content-type": "application/json; charset=UTF-8"
+            }
+        }).catch(error => console.log("KoboldCCP Switch API List Failed: " + error.message));
+    });    
 });
