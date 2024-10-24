@@ -7,6 +7,10 @@ import { extension_settings } from '../../../extensions.js';
 // Variable for saved models.
 let kobold_models = [];
 
+// 
+let reconnect_attempts = 0;
+const max_reconnect_attempts = 300;
+
 function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -93,7 +97,18 @@ async function onModelLoad(){
         headers: {
           "Content-type": "application/json; charset=UTF-8"
         }
-    }).catch(error => console.log("KoboldCCP Switch API Load Failed: " + error.message));
+    })
+    .then( async () => {
+        reconnect_attempts = max_reconnect_attempts;
+        while (reconnect_attempts > 0)
+        {
+            reconnect_attempts--;
+            $('#api_button_textgenerationwebui').click();
+            await sleep(1000);
+            $('.api_loading').click();
+        }
+    })
+    .catch(error => console.log("KoboldCCP Switch API Load Failed: " + error.message));
 }
 
 async function onModelUnload() {
@@ -117,8 +132,8 @@ async function onModelUnload() {
 
 function onStatusChange(e)
 {
-    console.log("I Got an event !!!!");
-    console.log(e);
+    if ( e != "no_connection")
+        reconnect_attempts = 0;
 }
 
 jQuery(async function() {
