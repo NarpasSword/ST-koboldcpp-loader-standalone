@@ -1,2 +1,2 @@
-# ST-KoboldAPI-Loader
-Makes call to (WIP) KoboldAPI Loader
+# SillyTavern Node.js API to reload KoboldCPP
+Makes call to KoboldCPP Loader API.

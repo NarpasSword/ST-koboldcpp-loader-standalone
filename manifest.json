@@ -1,5 +1,5 @@
 {
-    "display_name": "KoboldAPI Loader",
+    "display_name": "KoboldCPP Loader API",
     "loading_order": 12,
     "requires": [],
     "optional": [],
@@ -7,5 +7,5 @@
     "css": "style.css",
     "author": "kawaiiwolf",
     "version": "0.0.1",
-    "homePage": "https://git.kawaiiwolf.com/wolf/ST-KoboldAPI-Loader"
+    "homePage": ""
 }
