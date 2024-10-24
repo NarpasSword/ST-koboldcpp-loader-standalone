@@ -1,4 +1,4 @@
-import { saveSettingsDebounced } from '../../../../script.js';
+import { saveSettingsDebounced,eventSource,event_types } from '../../../../script.js';
 import { extension_settings } from '../../../extensions.js';
 
 // Variable for saved models.
@@ -101,9 +101,9 @@ async function onModelUnload() {
     .catch(error => console.log("KoboldCCP Switch API Unload Failed: " + error.message));
 }
 
-function listenForStatusChange(e) 
+function onStatusChange(e)
 {
-    console.log('I SAW A THING !!');
+    console.log("I Got an event !!!!");
     console.log(e);
 }
 
@@ -142,9 +142,8 @@ jQuery(async function() {
         </div>
     </div>`;
 
-    $('.koboldapi_settings').on('online_status_changed',listenForStatusChange);
-
     $('#extensions_settings').append(html);
+    eventSource.on(event_types.ONLINE_STATUS_CHANGED, onStatusChange);
     
     await loadSettings();
         
