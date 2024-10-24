@@ -106,7 +106,8 @@ async function onModelLoad(){
             console.log("Try to reconnect: " + reconnect_attempts);
             $('#api_button_textgenerationwebui').click();
             await sleep(1000);
-            $('.api_loading').click();
+            if (reconnect_attempts > 0)
+                $('.api_loading').click();
         }
     })
     .catch(error => console.log("KoboldCCP Switch API Load Failed: " + error.message));
