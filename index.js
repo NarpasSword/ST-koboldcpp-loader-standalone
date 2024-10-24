@@ -101,6 +101,12 @@ async function onModelUnload() {
     .catch(error => console.log("KoboldCCP Switch API Unload Failed: " + error.message));
 }
 
+function listenForStatusChange(e) 
+{
+    console.log('I SAW A THING !!');
+    console.log('e');
+}
+
 jQuery(async function() {
     const html = `
     <div class="koboldapi_settings">
@@ -135,6 +141,8 @@ jQuery(async function() {
             </div>
         </div>
     </div>`;
+
+    $('.koboldapi_settings').addEventListener('online_status_changed',listenForStatusChange);
 
     $('#extensions_settings').append(html);
     
