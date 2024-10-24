@@ -103,6 +103,7 @@ async function onModelLoad(){
         while (reconnect_attempts > 0)
         {
             reconnect_attempts--;
+            console.log("Try to reconnect: " + reconnect_attempts);
             $('#api_button_textgenerationwebui').click();
             await sleep(1000);
             $('.api_loading').click();
@@ -133,7 +134,11 @@ async function onModelUnload() {
 function onStatusChange(e)
 {
     if ( e != "no_connection")
+    {
         reconnect_attempts = 0;
+        console.log('Connected, done retrying.');
+    }
+        
 }
 
 jQuery(async function() {
