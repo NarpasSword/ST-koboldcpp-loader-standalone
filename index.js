@@ -142,7 +142,7 @@ jQuery(async function() {
         </div>
     </div>`;
 
-    $('.koboldapi_settings').addEventListener('online_status_changed',listenForStatusChange);
+    $('.koboldapi_settings').on('online_status_changed',listenForStatusChange);
 
     $('#extensions_settings').append(html);
     
