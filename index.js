@@ -125,7 +125,7 @@ jQuery(async function() {
     $('#kobold_api_apikey').on('input', onAPIKey);
     $('#kobold_api_apikey_clear').on('click', onClearAPIKey);
 
-    $('#model_list')
+    $('#kobold_api_model_list')
     .autocomplete({
         source: (_, response) => {
             return response(kobold_models);
