@@ -22,6 +22,11 @@ function onKoboldContextChanged() {
     saveSettingsDebounced();
 }
 
+function onKoboldCModelChanged() {
+    extension_settings.koboldapi.model = $(this).val();
+    saveSettingsDebounced();
+}
+
 function onNumbersOnly(event){
     var v = this.value;
     if($.isNumeric(v) === false) {
@@ -164,6 +169,7 @@ jQuery(async function() {
     $('#kobold_api_unload_button').on('click', onModelUnload);    
 
     $('#kobold_api_model_list')
+    .val(extension_settings.koboldapi.model)
     .autocomplete({
         source: (_, response) => {
             return response(kobold_models);
