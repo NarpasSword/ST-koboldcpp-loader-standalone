@@ -138,6 +138,9 @@ jQuery(async function() {
                 'search',
                 $(this).val(),
             );
+    })
+    .on('change', function() {
+        $(this).blur();
     });
 
     $('#kobold_api_load_button').on('click', function() {
