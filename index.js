@@ -37,11 +37,13 @@ function onNumbersOnly(event){
 async function loadSettings()
 {
     if (! extension_settings.koboldapi )
-        extension_settings.koboldapi = { "url": "", "context": 8 };
+        extension_settings.koboldapi = { "url": "", "context": 8, "model": "" };
     if ( ! extension_settings.koboldapi.url )
         extension_settings.koboldapi.url = "";
     if ( ! extension_settings.koboldapi.context )
         extension_settings.koboldapi.context = 8;
+    if ( ! extension_settings.koboldapi.model )
+        extension_settings.koboldapi.model = "";
 
     setAPIKeyPlaceholder();
     saveSettingsDebounced();
