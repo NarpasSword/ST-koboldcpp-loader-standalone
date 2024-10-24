@@ -1,7 +1,6 @@
 import { 
     saveSettingsDebounced,
-    eventSource,event_types,
-    cancelStatusCheck
+    eventSource,event_types
 } from '../../../../script.js';
 import { extension_settings } from '../../../extensions.js';
 
@@ -107,8 +106,8 @@ async function onModelUnload() {
     .then( async () => {
         $('#api_button_textgenerationwebui').click();
         await sleep(1000);
-        //$('.api_loading').click();
-        cancelStatusCheck();
+        $('.api_loading').click();
+        //cancelStatusCheck();
     })
     .catch(error => console.log("KoboldCCP Switch API Unload Failed: " + error.message));
 }
