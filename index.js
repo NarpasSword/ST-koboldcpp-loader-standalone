@@ -80,6 +80,9 @@ async function fetchKoboldModels()
 }
 
 async function onModelLoad(){
+    extension_settings.koboldapi.model = $('#kobold_api_model_list').val();
+    saveSettingsDebounced();
+
     await fetch(`${extension_settings.koboldapi.url}/load`, {
         method: "POST",
         body: JSON.stringify({
@@ -171,7 +174,6 @@ jQuery(async function() {
 
     $('#kobold_api_model_list')
     .val(extension_settings.koboldapi.model)
-    .on('input',onKoboldCModelChanged)
     .autocomplete({
         source: (_, response) => {
             return response(kobold_models);
