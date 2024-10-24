@@ -134,7 +134,7 @@ jQuery(async function() {
             body: JSON.stringify({
               model: $('#kobold_api_model_list').val(),
               context: $('#kobold_api_model_context').val(),
-              apikey: localStorage.getItem('KoboldCPP_Loder_APIKey');
+              apikey: localStorage.getItem('KoboldCPP_Loder_APIKey')
             }),
             headers: {
               "Content-type": "application/json; charset=UTF-8"
@@ -146,7 +146,7 @@ jQuery(async function() {
         fetch(`${extension_settings.koboldapi.url}/unload`, {
             method: "POST",
             body: JSON.stringify({
-              apikey: localStorage.getItem('KoboldCPP_Loder_APIKey');
+              apikey: localStorage.getItem('KoboldCPP_Loder_APIKey')
             }),
             headers: {
               "Content-type": "application/json; charset=UTF-8"
