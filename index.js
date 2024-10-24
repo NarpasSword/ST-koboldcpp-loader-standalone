@@ -171,6 +171,7 @@ jQuery(async function() {
 
     $('#kobold_api_model_list')
     .val(extension_settings.koboldapi.model)
+    .on('input',onKoboldCModelChanged)
     .autocomplete({
         source: (_, response) => {
             return response(kobold_models);
