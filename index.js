@@ -65,6 +65,36 @@ async function fetchKoboldModels()
         }).catch(error => console.log("KoboldCCP Switch API List Failed: " + error.message));
 }
 
+async function onModelLoad(){
+    await fetch(`${extension_settings.koboldapi.url}/load`, {
+        method: "POST",
+        body: JSON.stringify({
+          model: $('#kobold_api_model_list').val(),
+          context: $('#kobold_api_model_context').val(),
+          apikey: localStorage.getItem('KoboldCPP_Loder_APIKey')
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8"
+        }
+    }).catch(error => console.log("KoboldCCP Switch API Load Failed: " + error.message));
+}
+
+async function onModelUnload() {
+    await fetch(`${extension_settings.koboldapi.url}/unload`, {
+        method: "POST",
+        body: JSON.stringify({
+          apikey: localStorage.getItem('KoboldCPP_Loder_APIKey')
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8"
+        }
+    })
+    .then( () => {
+        $('#api_button_textgenerationwebui').click();
+    })
+    .catch(error => console.log("KoboldCCP Switch API Unload Failed: " + error.message));
+}
+
 jQuery(async function() {
     const html = `
     <div class="koboldapi_settings">
@@ -112,6 +142,8 @@ jQuery(async function() {
     $('#kobold_api_model_reload').on('click', fetchKoboldModels);
     $('#kobold_api_apikey').on('input', onAPIKey);
     $('#kobold_api_apikey_clear').on('click', onClearAPIKey);
+    $('#kobold_api_load_button').on('click', onModelLoad);
+    $('#kobold_api_unload_button').on('click', onModelUnload);    
 
     $('#kobold_api_model_list')
     .autocomplete({
@@ -127,30 +159,4 @@ jQuery(async function() {
                 $(this).val(),
             );
     });
-
-    $('#kobold_api_load_button').on('click', function() {
-        fetch(`${extension_settings.koboldapi.url}/load`, {
-            method: "POST",
-            body: JSON.stringify({
-              model: $('#kobold_api_model_list').val(),
-              context: $('#kobold_api_model_context').val(),
-              apikey: localStorage.getItem('KoboldCPP_Loder_APIKey')
-            }),
-            headers: {
-              "Content-type": "application/json; charset=UTF-8"
-            }
-        }).catch(error => console.log("KoboldCCP Switch API Load Failed: " + error.message));
-    });
-
-    $('#kobold_api_unload_button').on('click', function() {
-        fetch(`${extension_settings.koboldapi.url}/unload`, {
-            method: "POST",
-            body: JSON.stringify({
-              apikey: localStorage.getItem('KoboldCPP_Loder_APIKey')
-            }),
-            headers: {
-              "Content-type": "application/json; charset=UTF-8"
-            }
-        }).catch(error => console.log("KoboldCCP Switch API Unload Failed: " + error.message));
-    });    
 });
