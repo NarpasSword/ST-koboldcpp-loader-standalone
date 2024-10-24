@@ -10,7 +10,7 @@ function onKoboldURLChanged() {
 }
 
 function onKoboldContextChanged() {
-    extension_settings.koboldapi.context = v;
+    extension_settings.koboldapi.context = $(this).val();
     saveSettingsDebounced();
 }
 
@@ -139,7 +139,7 @@ jQuery(async function() {
             headers: {
               "Content-type": "application/json; charset=UTF-8"
             }
-        }).catch(error => console.log("KoboldCCP Switch API List Failed: " + error.message));
+        }).catch(error => console.log("KoboldCCP Switch API Load Failed: " + error.message));
     });
 
     $('#kobold_api_unload_button').on('click', function() {
@@ -151,6 +151,6 @@ jQuery(async function() {
             headers: {
               "Content-type": "application/json; charset=UTF-8"
             }
-        }).catch(error => console.log("KoboldCCP Switch API List Failed: " + error.message));
+        }).catch(error => console.log("KoboldCCP Switch API Unload Failed: " + error.message));
     });    
 });
