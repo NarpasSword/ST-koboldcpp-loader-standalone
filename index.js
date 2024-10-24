@@ -104,7 +104,7 @@ async function onModelUnload() {
 function listenForStatusChange(e) 
 {
     console.log('I SAW A THING !!');
-    console.log('e');
+    console.log(e);
 }
 
 jQuery(async function() {
