@@ -4,6 +4,10 @@ import { extension_settings } from '../../../extensions.js';
 // Variable for saved models.
 let kobold_models = [];
 
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 function onKoboldURLChanged() {
     extension_settings.koboldapi.url = $(this).val();
     saveSettingsDebounced();
@@ -89,8 +93,10 @@ async function onModelUnload() {
           "Content-type": "application/json; charset=UTF-8"
         }
     })
-    .then( () => {
+    .then( async () => {
         $('#api_button_textgenerationwebui').click();
+        await sleep(1000);
+        $('.api_loading').click();
     })
     .catch(error => console.log("KoboldCCP Switch API Unload Failed: " + error.message));
 }
