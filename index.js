@@ -30,6 +30,11 @@ function onKoboldCModelChanged() {
     saveSettingsDebounced();
 }
 
+function onKoboldOptChanged() {
+    extension_settings.koboldapi.opt = $(this).val();
+    saveSettingsDebounced();
+}
+
 function onNumbersOnly(event){
     var v = this.value;
     if($.isNumeric(v) === false) {
@@ -40,13 +45,15 @@ function onNumbersOnly(event){
 async function loadSettings()
 {
     if (! extension_settings.koboldapi )
-        extension_settings.koboldapi = { "url": "", "context": 8, "model": "" };
+        extension_settings.koboldapi = { "url": "", "context": 8, "model": "", "options": "val"};
     if ( ! extension_settings.koboldapi.url )
         extension_settings.koboldapi.url = "";
     if ( ! extension_settings.koboldapi.context )
         extension_settings.koboldapi.context = 8;
     if ( ! extension_settings.koboldapi.model )
         extension_settings.koboldapi.model = "";
+    if ( ! extension_settings.koboldapi.opt )
+        extension_settings.koboldapi.opt = "";
 
     setAPIKeyPlaceholder();
     saveSettingsDebounced();
@@ -92,6 +99,7 @@ async function onModelLoad(){
         body: JSON.stringify({
           model: $('#kobold_api_model_list').val(),
           context: $('#kobold_api_model_context').val(),
+          options: $('#kobold_api_model_opt').val(),
           apikey: localStorage.getItem('KoboldCPP_Loder_APIKey')
         }),
         headers: {
@@ -180,6 +188,7 @@ jQuery(async function() {
     await loadSettings();
         
     $('#kobold_api_url').val(extension_settings.koboldapi.url).on('input',onKoboldURLChanged);
+    $('#kobold_api_opt').val(extension_settings.koboldapi.opt).on('input',onKoboldOptChanged);
     $('#kobold_api_model_context')
       .val(extension_settings.koboldapi.context)
       .on('input',onKoboldContextChanged)
