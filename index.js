@@ -45,7 +45,7 @@ function onNumbersOnly(event){
 async function loadSettings()
 {
     if (! extension_settings.koboldapi )
-        extension_settings.koboldapi = { "url": "", "context": 8, "model": "", "options": "val"};
+        extension_settings.koboldapi = { "url": "", "context": 8, "model": "", "options": ""};
     if ( ! extension_settings.koboldapi.url )
         extension_settings.koboldapi.url = "";
     if ( ! extension_settings.koboldapi.context )
