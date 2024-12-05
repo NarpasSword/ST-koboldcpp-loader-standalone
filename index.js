@@ -162,7 +162,9 @@ jQuery(async function() {
                 <div class="flex-container flexFlowColumn">
                     <input id="kobold_api_model_list" name="model_list" class="text_pole flex1 wide100p" placeholder="Model name here" maxlength="100" size="35" value="" autocomplete="off">
                     <h4>Context Tokens (in 1024 chunks)</h4>
-                    <input id="kobold_api_model_context" name="model_list" class="text_pole flex1 wide100p" placeholder="Context Tokens" maxlength="3" size="35" value="" autocomplete="off" type="number" min="0" step="1">
+                    <input id="kobold_api_model_context" class="text_pole flex1 wide100p" placeholder="Context Tokens" maxlength="3" size="35" value="" autocomplete="off" type="number" min="0" step="1">
+                    <h4>Other Options</h4>
+                    <input id="kobold_api_model_opt" class="text_pole flex1 wide100p" placeholder="--kobold-flags" maxlength="3" size="35" value="" autocomplete="off">
                 </div>
                 <div class="flex-container">
                     <input id="kobold_api_load_button" class="menu_button" type="submit" value="Load" />
