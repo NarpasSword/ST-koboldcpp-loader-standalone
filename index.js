@@ -90,16 +90,20 @@ async function fetchKoboldModels()
         }).catch(error => console.log("KoboldCCP Switch API List Failed: " + error.message));
 }
 
-async function onModelLoad(){
+async function onModelLoad(args, value){
     extension_settings.koboldapi.model = $('#kobold_api_model_list').val();
     saveSettingsDebounced();
 
+    const modelget = value    ?? $('#kobold_api_model_list').val();
+    const ctxget   = args.ctx ?? $('#kobold_api_model_context').val();
+    const cmdget   = args.cmd ?? $('#kobold_api_model_opt').val();
+    
     await fetch(`${extension_settings.koboldapi.url}/load`, {
         method: "POST",
         body: JSON.stringify({
-          model: $('#kobold_api_model_list').val(),
-          context: $('#kobold_api_model_context').val(),
-          options: $('#kobold_api_model_opt').val(),
+          model: modelget,
+          context: ctxget,
+          options: cmdget,
           apikey: localStorage.getItem('KoboldCPP_Loder_APIKey')
         }),
         headers: {
@@ -144,6 +148,39 @@ function onStatusChange(e)
     if ( e != "no_connection")
         reconnect_attempts = 0;
 }
+
+SlashCommandParser.addCommandObject(SlashCommand.fromProps({
+    name: "kcpp-load",
+    callback: onModelLoad,
+    helpString: "Load a different KCpp model",
+    unnamedArgumentList: [
+        SlashCommandArgument.fromProps({
+            description: "Model to load",
+            typeList: [ARGUMENT_TYPE.STRING],
+            isRequired: false,
+        }),
+    ],
+    namedArgumentList: [
+        SlashCommandNamedArgument.fromProps({
+            name: "ctx",
+            description: "Model context size",
+            typeList: [ARGUMENT_TYPE.NUMBER],
+            isRequired: false,
+        }),
+        SlashCommandNamedArgument.fromProps({
+            name: "cmd",
+            description: "KCpp extra CLI flags",
+            typeList: [ARGUMENT_TYPE.STRING],
+            isRequired: false,
+        }),
+    ],
+}));
+
+SlashCommandParser.addCommandObject(SlashCommand.fromProps({
+    name: "kcpp-unload",
+    callback: onModelUnload,
+    helpString: "Unload the current KCpp model",
+}));
 
 jQuery(async function() {
     const html = `
