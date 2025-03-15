@@ -94,27 +94,9 @@ async function onModelLoad(args, value){
     extension_settings.koboldapi.model = $('#kobold_api_model_list').val();
     saveSettingsDebounced();
 
-    let modelget;
-    let ctxget;
-    let cmdget;
-    if (value !== undefined) {
-        modelget = value;
-    } else {
-        modelget = $('#kobold_api_model_list').val();
-    }
-
-    if (args.ctx !== undefined) {
-        ctxget = args.ctx;
-    } else {
-        ctxget = $('#kobold_api_model_context').val();
-    }
-
-    if (args.cmd !== undefined) {
-        cmdget = args.cmd;
-    } else {
-        cmdget = $('#kobold_api_model_opt').val();
-    }
-
+    const modelget = value    ?? $('#kobold_api_model_list').val();
+    const ctxget   = args.ctx ?? $('#kobold_api_model_context').val();
+    const cmdget   = args.cmd ?? $('#kobold_api_model_opt').val();
     
     await fetch(`${extension_settings.koboldapi.url}/load`, {
         method: "POST",
