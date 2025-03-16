@@ -87,7 +87,8 @@ function onAPIKey()
 
 async function fetchKoboldModels()
 {
-    const response = await fetch(`${extension_settings.koboldapi.url}/list`)
+    const url = $('input[data-server-history="koboldcpp"]').val();
+    const response = await fetch(`${extension_settings.koboldapi.url}/api/admin/list_options`)
         .then((response) => response.json())
         .then((list) => {
             kobold_models=list;
