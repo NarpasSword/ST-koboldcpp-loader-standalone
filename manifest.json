@@ -1,11 +1,11 @@
 {
-    "display_name": "KoboldCPP Loader API",
+    "display_name": "KoboldCPP Loader API Standalone",
     "loading_order": 12,
     "requires": [],
     "optional": [],
     "js": "index.js",
     "css": "style.css",
     "author": "kawaiiwolf",
-    "version": "0.0.1",
+    "version": "2.0.0",
     "homePage": ""
 }

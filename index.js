@@ -191,7 +191,7 @@ jQuery(async function() {
     <div class="koboldapi_settings">
         <div class="inline-drawer">
             <div class="inline-drawer-toggle inline-drawer-header">
-                <b>KoboldCPP Loader API</b>
+                <b>KoboldCPP Loader - Standalone</b>
                 <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
             </div>
             <div class="inline-drawer-content">
