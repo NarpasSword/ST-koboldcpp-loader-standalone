@@ -218,8 +218,9 @@ jQuery(async function() {
             -->
                 </div>
                 <div class="flex-container">
-            <!--    <input id="kobold_api_load_button" class="menu_button" type="submit" value="Load" />
-            -->     <input id="kobold_api_unload_button" class="menu_button" type="button" value="Unload" />
+                    <input id="kobold_api_load_button" class="menu_button" type="submit" value="Load" />
+            <!--    <input id="kobold_api_unload_button" class="menu_button" type="button" value="Unload" />
+            -->
                 </div>
             </div>
         </div>
