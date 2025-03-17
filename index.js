@@ -162,14 +162,14 @@ function onStatusChange(e)
 SlashCommandParser.addCommandObject(SlashCommand.fromProps({
     name: "kcpp-load",
     callback: onModelLoad,
-    helpString: "Load a different KCpp model",
+    helpString: "Load/Reload a .kcpps model",
     unnamedArgumentList: [
         SlashCommandArgument.fromProps({
-            description: "Model to load",
+            description: ".kcpps config to load",
             typeList: [ARGUMENT_TYPE.STRING],
-            isRequired: false,
+            isRequired: true,
         }),
-    ],
+    ], /*
     namedArgumentList: [
         SlashCommandNamedArgument.fromProps({
             name: "ctx",
@@ -183,7 +183,7 @@ SlashCommandParser.addCommandObject(SlashCommand.fromProps({
             typeList: [ARGUMENT_TYPE.STRING],
             isRequired: false,
         }),
-    ],
+    ],*/
 }));
 
 /*
