@@ -186,11 +186,13 @@ SlashCommandParser.addCommandObject(SlashCommand.fromProps({
     ],
 }));
 
+/*
 SlashCommandParser.addCommandObject(SlashCommand.fromProps({
     name: "kcpp-unload",
     callback: onModelUnload,
     helpString: "Unload the current KCpp model",
 }));
+*/
 
 jQuery(async function() {
     const html = `
