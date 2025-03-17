@@ -87,12 +87,11 @@ function onAPIKey()
 
 async function fetchKoboldModels()
 {
-    const url = $('input[data-server-history="koboldcpp"]').val();
     const response = await fetch(`${extension_settings.koboldapi.url}/api/admin/list_options`)
         .then((response) => response.json())
         .then((list) => {
             kobold_models=list;
-        }).catch(error => console.log("KoboldCCP Switch API List Failed: " + error.message));
+        }).catch(error => console.log("KoboldCCP Loader List Failed: " + error.message));
 }
 
 async function onModelLoad(args, value){
@@ -199,11 +198,12 @@ jQuery(async function() {
                 <div class="flex-container flexFlowColumn">
                     <h4>KoboldCPP Loader API URL</h4>
                     <input id="kobold_api_url" class="text_pole textarea_compact" type="text" />
-                    <h4>Loader API Key</h4>
+            <!--    <h4>Loader API Key</h4>
                     <div class="flex-container">
                         <input id="kobold_api_apikey" name="kobold_api_apikey" class="text_pole flex1 wide100p" maxlength="500" size="35" type="text" autocomplete="off">
                         <div id="kobold_api_apikey_clear" title="Clear your admin key" data-i18n="[title]Clear your admin key" class="menu_button fa-solid fa-circle-xmark clear-api-key" data-key="admin_key_tabby_ext_ext">
                     </div>
+            -->
                 </div>
                 <div class="flex-container">
                     <h4>LLM Models</h4>
@@ -211,14 +211,15 @@ jQuery(async function() {
                 </div>
                 <div class="flex-container flexFlowColumn">
                     <input id="kobold_api_model_list" name="model_list" class="text_pole flex1 wide100p" placeholder="Model name here" maxlength="100" size="35" value="" autocomplete="off">
-                    <h4>Context Tokens (in 1024 chunks)</h4>
+            <!--    <h4>Context Tokens (in 1024 chunks)</h4>
                     <input id="kobold_api_model_context" class="text_pole flex1 wide100p" placeholder="Context Tokens" maxlength="3" size="35" value="" autocomplete="off" type="number" min="0" step="1">
                     <h4>Other Options</h4>
                     <input id="kobold_api_model_opt" class="text_pole flex1 wide100p" placeholder="--kobold-flags" size="35" value="" autocomplete="off">
+            -->
                 </div>
                 <div class="flex-container">
-                    <input id="kobold_api_load_button" class="menu_button" type="submit" value="Load" />
-                    <input id="kobold_api_unload_button" class="menu_button" type="button" value="Unload" />
+            <!--    <input id="kobold_api_load_button" class="menu_button" type="submit" value="Load" />
+            -->     <input id="kobold_api_unload_button" class="menu_button" type="button" value="Unload" />
                 </div>
             </div>
         </div>
@@ -231,15 +232,15 @@ jQuery(async function() {
         
     $('#kobold_api_url').val(extension_settings.koboldapi.url).on('input',onKoboldURLChanged);
     $('#kobold_api_model_opt').val(extension_settings.koboldapi.opt).on('input',onKoboldOptChanged);
-    $('#kobold_api_model_context')
-      .val(extension_settings.koboldapi.context)
-      .on('input',onKoboldContextChanged)
-      .on('keyup',onNumbersOnly);
+    //$('#kobold_api_model_context')
+    //  .val(extension_settings.koboldapi.context)
+    //  .on('input',onKoboldContextChanged)
+    //  .on('keyup',onNumbersOnly);
     $('#kobold_api_model_reload').on('click', fetchKoboldModels);
-    $('#kobold_api_apikey').on('input', onAPIKey);
-    $('#kobold_api_apikey_clear').on('click', onClearAPIKey);
+    //$('#kobold_api_apikey').on('input', onAPIKey);
+    //$('#kobold_api_apikey_clear').on('click', onClearAPIKey);
     $('#kobold_api_load_button').on('click', onModelLoad);
-    $('#kobold_api_unload_button').on('click', onModelUnload);    
+    //$('#kobold_api_unload_button').on('click', onModelUnload);    
 
     $('#kobold_api_model_list')
     .val(extension_settings.koboldapi.model)
