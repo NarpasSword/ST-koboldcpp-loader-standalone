@@ -216,7 +216,7 @@ jQuery(async function() {
                 <div class="flex-container">
                     <h4>LLM Models</h4>
                     <div id="kobold_api_model_reload" title="Refresh model list" data-i18n="[title]Refresh model list" class="menu_button fa-lg fa-solid fa-repeat"></div>
-                </div>kobold_api_model_reload
+                </div>
                 <div class="flex-container flexFlowColumn">
                     <input id="kobold_api_model_list" name="model_list" class="text_pole flex1 wide100p" placeholder="Model name here" maxlength="100" size="35" value="" autocomplete="off">
             <!--    <h4>Context Tokens (in 1024 chunks)</h4>
@@ -234,7 +234,7 @@ jQuery(async function() {
         </div>
     </div>`;
 
-    $('#extensions_settings').append(html);Refresh
+    $('#extensions_settings').append(html);
     eventSource.on(event_types.ONLINE_STATUS_CHANGED, onStatusChange);
     
     await loadSettings();
