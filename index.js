@@ -24,16 +24,19 @@ function onKoboldURLChanged() {
     saveSettingsDebounced();
 }
 
+/*
 function onKoboldContextChanged() {
     extension_settings.koboldapi.context = $(this).val();
     saveSettingsDebounced();
 }
+*/
 
 function onKoboldCModelChanged() {
     extension_settings.koboldapi.model = $(this).val();
     saveSettingsDebounced();
 }
 
+/*
 function onKoboldOptChanged() {
     extension_settings.koboldapi.opt = $(this).val();
     saveSettingsDebounced();
@@ -45,25 +48,28 @@ function onNumbersOnly(event){
          this.value = extension_settings.koboldapi.context;
     }
 }
+*/
 
 async function loadSettings()
 {
     if (! extension_settings.koboldapi )
-        extension_settings.koboldapi = { "url": "", "context": 8, "model": "", "options": ""};
+//        extension_settings.koboldapi = { "url": "", "context": 8, "model": "", "options": ""};
+        extension_settings.koboldapi = { "url": "", "model": ""};
     if ( ! extension_settings.koboldapi.url )
         extension_settings.koboldapi.url = "";
-    if ( ! extension_settings.koboldapi.context )
-        extension_settings.koboldapi.context = 8;
+//    if ( ! extension_settings.koboldapi.context )
+//        extension_settings.koboldapi.context = 8;
     if ( ! extension_settings.koboldapi.model )
         extension_settings.koboldapi.model = "";
-    if ( ! extension_settings.koboldapi.opt )
-        extension_settings.koboldapi.opt = "";
+//    if ( ! extension_settings.koboldapi.opt )
+//        extension_settings.koboldapi.opt = "";
 
-    setAPIKeyPlaceholder();
+//    setAPIKeyPlaceholder();
     saveSettingsDebounced();
     await fetchKoboldModels();
 }
 
+/*
 function setAPIKeyPlaceholder()
 {
     let api = localStorage.getItem('KoboldCPP_Loder_APIKey');
@@ -84,6 +90,7 @@ function onAPIKey()
         localStorage.setItem('KoboldCPP_Loder_APIKey', value);
     }
 }
+*/
 
 async function fetchKoboldModels()
 {
@@ -98,17 +105,14 @@ async function onModelLoad(args, value){
     extension_settings.koboldapi.model = $('#kobold_api_model_list').val();
     saveSettingsDebounced();
 
-    const modelget = value    ?? $('#kobold_api_model_list').val();
-    const ctxget   = args.ctx ?? $('#kobold_api_model_context').val();
-    const cmdget   = args.cmd ?? $('#kobold_api_model_opt').val();
+    const modelName = value    ?? $('#kobold_api_model_list').val();
+//    const ctxget   = args.ctx ?? $('#kobold_api_model_context').val();
+//    const cmdget   = args.cmd ?? $('#kobold_api_model_opt').val();
     
-    await fetch(`${extension_settings.koboldapi.url}/load`, {
+    await fetch(`${extension_settings.koboldapi.url}/api/admin/reload_config`, {
         method: "POST",
         body: JSON.stringify({
-          model: modelget,
-          context: ctxget,
-          options: cmdget,
-          apikey: localStorage.getItem('KoboldCPP_Loder_APIKey')
+          filename: modelName,
         }),
         headers: {
           "Content-type": "application/json; charset=UTF-8"
@@ -129,6 +133,7 @@ async function onModelLoad(args, value){
     .catch(error => console.log("KoboldCCP Switch API Load Failed: " + error.message));
 }
 
+/*
 async function onModelUnload() {
     await fetch(`${extension_settings.koboldapi.url}/unload`, {
         method: "POST",
@@ -146,6 +151,7 @@ async function onModelUnload() {
     })
     .catch(error => console.log("KoboldCCP Switch API Unload Failed: " + error.message));
 }
+*/
 
 function onStatusChange(e)
 {
@@ -218,7 +224,7 @@ jQuery(async function() {
             -->
                 </div>
                 <div class="flex-container">
-                    <input id="kobold_api_load_button" class="menu_button" type="submit" value="Load" />
+                    <input id="kobold_api_load_button" class="menu_button" type="submit" value="Reload KoboldCPP Config" />
             <!--    <input id="kobold_api_unload_button" class="menu_button" type="button" value="Unload" />
             -->
                 </div>
