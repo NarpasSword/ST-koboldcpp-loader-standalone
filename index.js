@@ -199,12 +199,12 @@ jQuery(async function() {
     <div class="koboldapi_settings">
         <div class="inline-drawer">
             <div class="inline-drawer-toggle inline-drawer-header">
-                <b>KoboldCPP Loader - Standalone</b>
+                <b>KoboldCPP .kcpps Loader</b>
                 <div class="inline-drawer-icon fa-solid fa-circle-chevron-down down"></div>
             </div>
             <div class="inline-drawer-content">
                 <div class="flex-container flexFlowColumn">
-                    <h4>KoboldCPP Loader API URL</h4>
+                    <h4>KoboldCPP Loader Base URL</h4>
                     <input id="kobold_api_url" class="text_pole textarea_compact" type="text" />
             <!--    <h4>Loader API Key</h4>
                     <div class="flex-container">
@@ -214,7 +214,7 @@ jQuery(async function() {
             -->
                 </div>
                 <div class="flex-container">
-                    <h4>LLM Models</h4>
+                    <h4>Available .kcpps configurations</h4>
                     <div id="kobold_api_model_reload" title="Refresh model list" data-i18n="[title]Refresh model list" class="menu_button fa-lg fa-solid fa-repeat"></div>
                 </div>
                 <div class="flex-container flexFlowColumn">
