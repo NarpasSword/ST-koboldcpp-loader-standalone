@@ -56,8 +56,6 @@ async function loadSettings()
         extension_settings.koboldapi = { "url": "", "model": "", "unload": "" };
     if ( ! extension_settings.koboldapi.url )
         extension_settings.koboldapi.url = "";
-//    if ( ! extension_settings.koboldapi.context )
-//        extension_settings.koboldapi.context = 8;
     if ( ! extension_settings.koboldapi.model )
         extension_settings.koboldapi.model = "";
     if ( ! extension_settings.koboldapi.model )
@@ -122,38 +120,6 @@ async function onModelLoad(args, value){
     saveSettingsDebounced();
 
     const modelName = value    ?? $('#kobold_api_model_list').val();
-//    const ctxget   = args.ctx ?? $('#kobold_api_model_context').val();
-//    const cmdget   = args.cmd ?? $('#kobold_api_model_opt').val();
-    
-    await fetch(`${extension_settings.koboldapi.url}/api/admin/reload_config`, {
-        method: "POST",
-        body: JSON.stringify({
-          filename: modelName,
-        }),
-        headers: {
-          "Content-type": "application/json; charset=UTF-8"
-        }
-    })
-    .then( async () => {
-        reconnect_attempts = max_reconnect_attempts;
-        while (reconnect_attempts > 0)
-        {
-            reconnect_attempts--;
-            console.log("Try to reconnect: " + reconnect_attempts);
-            $('#api_button_textgenerationwebui').click();
-            await sleep(1000);
-            if (reconnect_attempts > 0)
-                $('.api_loading').click();
-        }
-    })
-    .catch(error => console.log("KoboldCCP Switch API Load Failed: " + error.message));
-}
-
-async function onModelUnload(){
-    extension_settings.koboldapi.unload = $('#kobold_api_unload_list').val();
-    saveSettingsDebounced();
-
-    const modelName = $('#kobold_api_unload_list').val();
     
     await fetch(`${extension_settings.koboldapi.url}/api/admin/reload_config`, {
         method: "POST",
