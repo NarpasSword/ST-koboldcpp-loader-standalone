@@ -147,6 +147,36 @@ async function onModelLoad(args, value){
     .catch(error => console.log("KoboldCCP Switch API Load Failed: " + error.message));
 }
 
+async function onModelUnload(){
+    extension_settings.koboldapi.unload = $('#kobold_api_unload_list').val();
+    saveSettingsDebounced();
+
+    const modelName = $('#kobold_api_unload_list').val();
+    
+    await fetch(`${extension_settings.koboldapi.url}/api/admin/reload_config`, {
+        method: "POST",
+        body: JSON.stringify({
+          filename: modelName,
+        }),
+        headers: {
+          "Content-type": "application/json; charset=UTF-8"
+        }
+    })
+    .then( async () => {
+        reconnect_attempts = max_reconnect_attempts;
+        while (reconnect_attempts > 0)
+        {
+            reconnect_attempts--;
+            console.log("Try to reconnect: " + reconnect_attempts);
+            $('#api_button_textgenerationwebui').click();
+            await sleep(1000);
+            if (reconnect_attempts > 0)
+                $('.api_loading').click();
+        }
+    })
+    .catch(error => console.log("KoboldCCP Switch API Load Failed: " + error.message));
+}
+
 function onStatusChange(e)
 {
     if ( e != "no_connection")
