@@ -11,7 +11,7 @@ import { ARGUMENT_TYPE, SlashCommandArgument, SlashCommandNamedArgument } from '
 // Variable for saved models.
 let kobold_models = [];
 
-// 
+// Variables for connection attempts.
 let reconnect_attempts = 0;
 const max_reconnect_attempts = 300;
 
@@ -52,17 +52,16 @@ function onNumbersOnly(event){
 
 async function loadSettings()
 {
-    if (! extension_settings.koboldapi )
-//        extension_settings.koboldapi = { "url": "", "context": 8, "model": "", "options": ""};
-        extension_settings.koboldapi = { "url": "", "model": ""};
+    if ( ! extension_settings.koboldapi )
+        extension_settings.koboldapi = { "url": "", "model": "", "unload": "" };
     if ( ! extension_settings.koboldapi.url )
         extension_settings.koboldapi.url = "";
 //    if ( ! extension_settings.koboldapi.context )
 //        extension_settings.koboldapi.context = 8;
     if ( ! extension_settings.koboldapi.model )
         extension_settings.koboldapi.model = "";
-//    if ( ! extension_settings.koboldapi.opt )
-//        extension_settings.koboldapi.opt = "";
+    if ( ! extension_settings.koboldapi.model )
+        extension_settings.koboldapi.unload = "";
 
 //    setAPIKeyPlaceholder();
     saveSettingsDebounced();
@@ -101,6 +100,23 @@ async function fetchKoboldModels()
         }).catch(error => console.log("KoboldCCP Loader List Failed: " + error.message));
 }
 
+async function listKoboldModels()
+{
+    let kcppslist = [];
+    const response = await fetch(`${extension_settings.koboldapi.url}/api/admin/list_options`)
+        .then((response) => response.json())
+        .then((list) => {
+            kcppslist=list;
+        }).catch(error => console.log("KoboldCCP Loader List Failed: " + error.message));
+
+    return kcppslist;
+}
+
+async function curUnloadModel() {
+    const kcpps_cfg = extension_settings.koboldapi.unload;
+    return kcpps_cfg;
+}
+
 async function onModelLoad(args, value){
     extension_settings.koboldapi.model = $('#kobold_api_model_list').val();
     saveSettingsDebounced();
@@ -133,25 +149,35 @@ async function onModelLoad(args, value){
     .catch(error => console.log("KoboldCCP Switch API Load Failed: " + error.message));
 }
 
-/*
-async function onModelUnload() {
-    await fetch(`${extension_settings.koboldapi.url}/unload`, {
+async function onModelUnload(){
+    extension_settings.koboldapi.unload = $('#kobold_api_unload_list').val();
+    saveSettingsDebounced();
+
+    const modelName = $('#kobold_api_unload_list').val();
+    
+    await fetch(`${extension_settings.koboldapi.url}/api/admin/reload_config`, {
         method: "POST",
         body: JSON.stringify({
-          apikey: localStorage.getItem('KoboldCPP_Loder_APIKey')
+          filename: modelName,
         }),
         headers: {
           "Content-type": "application/json; charset=UTF-8"
         }
     })
     .then( async () => {
-        $('#api_button_textgenerationwebui').click();
-        await sleep(1000);
-        $('.api_loading').click();
+        reconnect_attempts = max_reconnect_attempts;
+        while (reconnect_attempts > 0)
+        {
+            reconnect_attempts--;
+            console.log("Try to reconnect: " + reconnect_attempts);
+            $('#api_button_textgenerationwebui').click();
+            await sleep(1000);
+            if (reconnect_attempts > 0)
+                $('.api_loading').click();
+        }
     })
-    .catch(error => console.log("KoboldCCP Switch API Unload Failed: " + error.message));
+    .catch(error => console.log("KoboldCCP Switch API Load Failed: " + error.message));
 }
-*/
 
 function onStatusChange(e)
 {
@@ -162,37 +188,29 @@ function onStatusChange(e)
 SlashCommandParser.addCommandObject(SlashCommand.fromProps({
     name: "kcpp-load",
     callback: onModelLoad,
-    helpString: "Load/Reload a .kcpps model",
+    helpString: "Load/Reload a .kcpps config",
     unnamedArgumentList: [
         SlashCommandArgument.fromProps({
             description: ".kcpps config to load",
             typeList: [ARGUMENT_TYPE.STRING],
             isRequired: true,
         }),
-    ], /*
-    namedArgumentList: [
-        SlashCommandNamedArgument.fromProps({
-            name: "ctx",
-            description: "Model context size",
-            typeList: [ARGUMENT_TYPE.NUMBER],
-            isRequired: false,
-        }),
-        SlashCommandNamedArgument.fromProps({
-            name: "cmd",
-            description: "KCpp extra CLI flags",
-            typeList: [ARGUMENT_TYPE.STRING],
-            isRequired: false,
-        }),
-    ],*/
+    ],
 }));
 
-/*
 SlashCommandParser.addCommandObject(SlashCommand.fromProps({
     name: "kcpp-unload",
-    callback: onModelUnload,
-    helpString: "Unload the current KCpp model",
+    callback: curUnloadModel,
+    helpString: "Output the string of the current unloaded models kcpps config.",
+    returns: "String of Unload kcpps file name."
 }));
-*/
+
+SlashCommandParser.addCommandObject(SlashCommand.fromProps({
+    name: "kcpp-list",
+    callback: listKoboldModels,
+    helpString: "Output a list of currently available kcpps config files.",
+    returns: "List of kcpps config files",
+}));
 
 jQuery(async function() {
     const html = `
@@ -218,7 +236,9 @@ jQuery(async function() {
                     <div id="kobold_api_model_reload" title="Refresh model list" data-i18n="[title]Refresh model list" class="menu_button fa-lg fa-solid fa-repeat"></div>
                 </div>
                 <div class="flex-container flexFlowColumn">
-                    <input id="kobold_api_model_list" name="model_list" class="text_pole flex1 wide100p" placeholder="Model name here" maxlength="100" size="35" value="" autocomplete="off">
+                    <input id="kobold_api_model_list" name="model_list" class="text_pole flex1 wide100p" placeholder=".kcpps name here" maxlength="100" size="35" value="" autocomplete="off">
+                    <h4>Unload models .kcpps config</h4>
+                    <input id="kobold_api_unload_list" name="unload_list" class="text_pole flex1 wide100p" placeholder=".kcpps name here" maxlength="100" size="35" value="" autocomplete="off">
             <!--    <h4>Context Tokens (in 1024 chunks)</h4>
                     <input id="kobold_api_model_context" class="text_pole flex1 wide100p" placeholder="Context Tokens" maxlength="3" size="35" value="" autocomplete="off" type="number" min="0" step="1">
                     <h4>Other Options</h4>
@@ -227,8 +247,7 @@ jQuery(async function() {
                 </div>
                 <div class="flex-container">
                     <input id="kobold_api_load_button" class="menu_button" type="submit" value="Reload KoboldCPP Config" />
-            <!--    <input id="kobold_api_unload_button" class="menu_button" type="button" value="Unload" />
-            -->
+                    <input id="kobold_api_unload_button" class="menu_button" type="button" value="Unload" />
                 </div>
             </div>
         </div>
@@ -249,10 +268,26 @@ jQuery(async function() {
     //$('#kobold_api_apikey').on('input', onAPIKey);
     //$('#kobold_api_apikey_clear').on('click', onClearAPIKey);
     $('#kobold_api_load_button').on('click', onModelLoad);
-    //$('#kobold_api_unload_button').on('click', onModelUnload);    
+    $('#kobold_api_unload_button').on('click', onModelUnload);    
 
     $('#kobold_api_model_list')
     .val(extension_settings.koboldapi.model)
+    .autocomplete({
+        source: (_, response) => {
+            return response(kobold_models);
+        },
+        minLength: 0,
+    })
+    .focus(function () {
+        $(this)
+            .autocomplete(
+                'search',
+                $(this).val(),
+            );
+    });
+
+    $('#kobold_api_unload_list')
+    .val(extension_settings.koboldapi.unload)
     .autocomplete({
         source: (_, response) => {
             return response(kobold_models);
