@@ -31,10 +31,12 @@ function onKoboldContextChanged() {
 }
 */
 
+/*
 function onKoboldCModelChanged() {
     extension_settings.koboldapi.model = $(this).val();
     saveSettingsDebounced();
 }
+*/
 
 /*
 function onKoboldOptChanged() {
