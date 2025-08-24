@@ -1,17 +1,17 @@
-import { 
+import {
     saveSettingsDebounced,
-    eventSource,event_types
+    eventSource, event_types
 } from '../../../../script.js';
 import { extension_settings } from '../../../extensions.js';
 
 import { SlashCommandParser } from '../../../slash-commands/SlashCommandParser.js';
 import { SlashCommand } from '../../../slash-commands/SlashCommand.js';
-import { ARGUMENT_TYPE, SlashCommandArgument, SlashCommandNamedArgument } from '../../../slash-commands/SlashCommandArgument.js';
+import { ARGUMENT_TYPE, SlashCommandArgument } from '../../../slash-commands/SlashCommandArgument.js';
 
-// Variable for saved models.
+// In-memory list of .kcpps options returned by KoboldCPP
 let kobold_models = [];
 
-// Variables for connection attempts.
+// Reconnect loop counters
 let reconnect_attempts = 0;
 const max_reconnect_attempts = 300;
 
@@ -19,177 +19,192 @@ function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+function sanitizeBaseUrl(url) {
+    if (!url) return '';
+    // remove trailing slashes to avoid "//api..."
+    return url.replace(/\/+$/, '');
+}
+
 function onKoboldURLChanged() {
-    extension_settings.koboldapi.url = $(this).val();
+    extension_settings.koboldapi.url = sanitizeBaseUrl($(this).val());
     saveSettingsDebounced();
 }
 
-/*
-function onKoboldContextChanged() {
-    extension_settings.koboldapi.context = $(this).val();
-    saveSettingsDebounced();
-}
-*/
-
-/*
-function onKoboldCModelChanged() {
-    extension_settings.koboldapi.model = $(this).val();
-    saveSettingsDebounced();
-}
-*/
-
-/*
-function onKoboldOptChanged() {
-    extension_settings.koboldapi.opt = $(this).val();
-    saveSettingsDebounced();
-}
-
+/* If you ever add these back, keep the debouncers:
 function onNumbersOnly(event){
     var v = this.value;
-    if($.isNumeric(v) === false) {
-         this.value = extension_settings.koboldapi.context;
+    if ($.isNumeric(v) === false) {
+        this.value = extension_settings.koboldapi.context;
     }
 }
 */
 
-async function loadSettings()
-{
-    if ( ! extension_settings.koboldapi )
-        extension_settings.koboldapi = { "url": "", "model": "", "unload": "" };
-    if ( ! extension_settings.koboldapi.url )
-        extension_settings.koboldapi.url = "";
-    if ( ! extension_settings.koboldapi.model )
-        extension_settings.koboldapi.model = "";
-    if ( ! extension_settings.koboldapi.model )
-        extension_settings.koboldapi.unload = "";
+async function loadSettings() {
+    if (!extension_settings.koboldapi) {
+        extension_settings.koboldapi = { url: '', model: '', unload: '' };
+    }
+    if (!extension_settings.koboldapi.url) extension_settings.koboldapi.url = '';
+    if (!extension_settings.koboldapi.model) extension_settings.koboldapi.model = '';
+    // FIX: initialize unload correctly (was checking model twice)
+    if (!extension_settings.koboldapi.unload) extension_settings.koboldapi.unload = '';
 
-//    setAPIKeyPlaceholder();
     saveSettingsDebounced();
-    await fetchKoboldModels();
+    await fetchKoboldModels(true);
 }
 
-/*
-function setAPIKeyPlaceholder()
-{
-    let api = localStorage.getItem('KoboldCPP_Loder_APIKey');
-    const placeholder = api ? '✔️ Key found' : '❌ Missing key';
-    $('#kobold_api_apikey').attr('placeholder', placeholder);
+function getHeaders() {
+    // If you later support adminpassword or apikey, add here
+    return { 'Content-Type': 'application/json; charset=UTF-8' };
 }
 
-function onClearAPIKey()
-{
-    localStorage.removeItem('KoboldCPP_Loder_APIKey');
-    setAPIKeyPlaceholder();
-}
+async function fetchKoboldModels(openMenus = false) {
+    const base = sanitizeBaseUrl(extension_settings.koboldapi.url);
+    if (!base) {
+        console.warn('KoboldCPP Loader: Base URL is empty.');
+        kobold_models = [];
+        return;
+    }
 
-function onAPIKey()
-{
-    const value = $(this).val();
-    if (value) {
-        localStorage.setItem('KoboldCPP_Loder_APIKey', value);
+    try {
+        $('#kobold_api_model_reload').addClass('fa-spin');
+
+        const resp = await fetch(`${base}/api/admin/list_options`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const list = await resp.json();
+
+        if (!Array.isArray(list)) throw new Error('Unexpected response (not an array)');
+
+        kobold_models = list;
+
+        // Refresh the autocomplete sources live
+        $('#kobold_api_model_list').autocomplete('option', 'source', kobold_models);
+        $('#kobold_api_unload_list').autocomplete('option', 'source', kobold_models);
+
+        // If requested, reopen suggestions so the user sees the updated list right away
+        if (openMenus) {
+            $('#kobold_api_model_list')
+                .focus()
+                .autocomplete('search', $('#kobold_api_model_list').val());
+
+            $('#kobold_api_unload_list')
+                .focus()
+                .autocomplete('search', $('#kobold_api_unload_list').val());
+        }
+
+        console.log('KoboldCPP Loader: list_options OK:', kobold_models);
+    } catch (err) {
+        console.error('KoboldCPP Loader list failed:', err);
+    } finally {
+        $('#kobold_api_model_reload').removeClass('fa-spin');
     }
 }
-*/
 
-async function fetchKoboldModels()
-{
-    const response = await fetch(`${extension_settings.koboldapi.url}/api/admin/list_options`)
-        .then((response) => response.json())
-        .then((list) => {
-            kobold_models=list;
-        }).catch(error => console.log("KoboldCCP Loader List Failed: " + error.message));
-}
-
-async function listKoboldModels()
-{
-    let kcppslist = [];
-    const response = await fetch(`${extension_settings.koboldapi.url}/api/admin/list_options`)
-        .then((response) => response.json())
-        .then((list) => {
-            kcppslist=list;
-        }).catch(error => console.log("KoboldCCP Loader List Failed: " + error.message));
-
-    return kcppslist;
+async function listKoboldModels() {
+    const base = sanitizeBaseUrl(extension_settings.koboldapi.url);
+    try {
+        const resp = await fetch(`${base}/api/admin/list_options`);
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const list = await resp.json();
+        if (!Array.isArray(list)) throw new Error('Unexpected response');
+        return list;
+    } catch (err) {
+        console.error('KoboldCPP Loader list failed:', err);
+        return [];
+    }
 }
 
 async function curUnloadModel() {
-    const kcpps_cfg = extension_settings.koboldapi.unload;
-    return kcpps_cfg;
+    return extension_settings.koboldapi.unload || '';
 }
 
-async function onModelLoad(args, value){
-    extension_settings.koboldapi.model = $('#kobold_api_model_list').val();
+async function postReloadConfig(filename) {
+    const base = sanitizeBaseUrl(extension_settings.koboldapi.url);
+    if (!base) throw new Error('Base URL is empty');
+
+    const resp = await fetch(`${base}/api/admin/reload_config`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ filename }),
+    });
+
+    // Admin API returns 200 even on failure, with {"success": false}
+    // We don’t block here; the reconnect loop below will run regardless.
+    // Logs on the server side reveal exact errors if it failed.
+    try {
+        const data = await resp.json();
+        console.log('reload_config response:', data);
+    } catch (e) {
+        // Some builds return empty body; ignore JSON parse error.
+    }
+}
+
+async function onModelLoad(args, value) {
+    // Value from slash command OR current selection
+    const chosen = value ?? $('#kobold_api_model_list').val();
+    if (!chosen) {
+        console.warn('KoboldCPP Loader: No model filename provided.');
+        return;
+    }
+
+    extension_settings.koboldapi.model = chosen;
     saveSettingsDebounced();
 
-    const modelName = value    ?? $('#kobold_api_model_list').val();
-    
-    await fetch(`${extension_settings.koboldapi.url}/api/admin/reload_config`, {
-        method: "POST",
-        body: JSON.stringify({
-          filename: modelName,
-        }),
-        headers: {
-          "Content-type": "application/json; charset=UTF-8"
-        }
-    })
-    .then( async () => {
+    try {
+        await postReloadConfig(chosen);
+
+        // Reconnect spam-clicker (mirrors original behavior)
         reconnect_attempts = max_reconnect_attempts;
-        while (reconnect_attempts > 0)
-        {
+        while (reconnect_attempts > 0) {
             reconnect_attempts--;
-            console.log("Try to reconnect: " + reconnect_attempts);
+            console.log('KoboldCPP Loader: Try to reconnect:', reconnect_attempts);
             $('#api_button_textgenerationwebui').click();
             await sleep(1000);
-            if (reconnect_attempts > 0)
-                $('.api_loading').click();
+            if (reconnect_attempts > 0) $('.api_loading').click();
         }
-    })
-    .catch(error => console.log("KoboldCCP Switch API Load Failed: " + error.message));
+    } catch (err) {
+        console.error('KoboldCPP Loader switch failed:', err);
+    }
 }
 
-async function onModelUnload(){
-    extension_settings.koboldapi.unload = $('#kobold_api_unload_list').val();
+async function onModelUnload() {
+    const chosen = $('#kobold_api_unload_list').val();
+    if (!chosen) {
+        console.warn('KoboldCPP Loader: No unload filename provided.');
+        return;
+    }
+
+    extension_settings.koboldapi.unload = chosen;
     saveSettingsDebounced();
 
-    const modelName = $('#kobold_api_unload_list').val();
-    
-    await fetch(`${extension_settings.koboldapi.url}/api/admin/reload_config`, {
-        method: "POST",
-        body: JSON.stringify({
-          filename: modelName,
-        }),
-        headers: {
-          "Content-type": "application/json; charset=UTF-8"
-        }
-    })
-    .then( async () => {
+    try {
+        await postReloadConfig(chosen);
+
+        // Reconnect spam-clicker (mirrors original behavior)
         reconnect_attempts = max_reconnect_attempts;
-        while (reconnect_attempts > 0)
-        {
+        while (reconnect_attempts > 0) {
             reconnect_attempts--;
-            console.log("Try to reconnect: " + reconnect_attempts);
+            console.log('KoboldCPP Loader: Try to reconnect:', reconnect_attempts);
             $('#api_button_textgenerationwebui').click();
             await sleep(1000);
-            if (reconnect_attempts > 0)
-                $('.api_loading').click();
+            if (reconnect_attempts > 0) $('.api_loading').click();
         }
-    })
-    .catch(error => console.log("KoboldCCP Switch API Load Failed: " + error.message));
+    } catch (err) {
+        console.error('KoboldCPP Loader unload failed:', err);
+    }
 }
 
-function onStatusChange(e)
-{
-    if ( e != "no_connection")
-        reconnect_attempts = 0;
+function onStatusChange(e) {
+    if (e !== 'no_connection') reconnect_attempts = 0;
 }
 
+// Slash commands
 SlashCommandParser.addCommandObject(SlashCommand.fromProps({
-    name: "kcpp-load",
+    name: 'kcpp-load',
     callback: onModelLoad,
-    helpString: "Load/Reload a .kcpps config",
+    helpString: 'Load/Reload a .kcpps config',
     unnamedArgumentList: [
         SlashCommandArgument.fromProps({
-            description: ".kcpps config to load",
+            description: '.kcpps config to load',
             typeList: [ARGUMENT_TYPE.STRING],
             isRequired: true,
         }),
@@ -197,20 +212,21 @@ SlashCommandParser.addCommandObject(SlashCommand.fromProps({
 }));
 
 SlashCommandParser.addCommandObject(SlashCommand.fromProps({
-    name: "kcpp-unload",
+    name: 'kcpp-unload',
     callback: curUnloadModel,
-    helpString: "Output the string of the current unloaded models kcpps config.",
-    returns: "String of Unload kcpps file name."
+    helpString: 'Output the string of the current unloaded models kcpps config.',
+    returns: 'String of Unload kcpps file name.',
 }));
 
 SlashCommandParser.addCommandObject(SlashCommand.fromProps({
-    name: "kcpp-list",
+    name: 'kcpp-list',
     callback: listKoboldModels,
-    helpString: "Output a list of currently available kcpps config files.",
-    returns: "List of kcpps config files",
+    helpString: 'Output a list of currently available kcpps config files.',
+    returns: 'List of kcpps config files',
 }));
 
-jQuery(async function() {
+// UI
+jQuery(async function () {
     const html = `
     <div class="koboldapi_settings">
         <div class="inline-drawer">
@@ -222,12 +238,6 @@ jQuery(async function() {
                 <div class="flex-container flexFlowColumn">
                     <h4>KoboldCPP Loader Base URL</h4>
                     <input id="kobold_api_url" class="text_pole textarea_compact" type="text" />
-            <!--    <h4>Loader API Key</h4>
-                    <div class="flex-container">
-                        <input id="kobold_api_apikey" name="kobold_api_apikey" class="text_pole flex1 wide100p" maxlength="500" size="35" type="text" autocomplete="off">
-                        <div id="kobold_api_apikey_clear" title="Clear your admin key" data-i18n="[title]Clear your admin key" class="menu_button fa-solid fa-circle-xmark clear-api-key" data-key="admin_key_tabby_ext_ext">
-                    </div>
-            -->
                 </div>
                 <div class="flex-container">
                     <h4>Available .kcpps configurations</h4>
@@ -237,11 +247,6 @@ jQuery(async function() {
                     <input id="kobold_api_model_list" name="model_list" class="text_pole flex1 wide100p" placeholder=".kcpps name here" maxlength="100" size="35" value="" autocomplete="off">
                     <h4>Unload models .kcpps config</h4>
                     <input id="kobold_api_unload_list" name="unload_list" class="text_pole flex1 wide100p" placeholder=".kcpps name here" maxlength="100" size="35" value="" autocomplete="off">
-            <!--    <h4>Context Tokens (in 1024 chunks)</h4>
-                    <input id="kobold_api_model_context" class="text_pole flex1 wide100p" placeholder="Context Tokens" maxlength="3" size="35" value="" autocomplete="off" type="number" min="0" step="1">
-                    <h4>Other Options</h4>
-                    <input id="kobold_api_model_opt" class="text_pole flex1 wide100p" placeholder="--kobold-flags" size="35" value="" autocomplete="off">
-            -->
                 </div>
                 <div class="flex-container">
                     <input id="kobold_api_load_button" class="menu_button" type="submit" value="Reload KoboldCPP Config" />
@@ -253,50 +258,38 @@ jQuery(async function() {
 
     $('#extensions_settings').append(html);
     eventSource.on(event_types.ONLINE_STATUS_CHANGED, onStatusChange);
-    
+
     await loadSettings();
-        
-    $('#kobold_api_url').val(extension_settings.koboldapi.url).on('input',onKoboldURLChanged);
-    //$('#kobold_api_model_opt').val(extension_settings.koboldapi.opt).on('input',onKoboldOptChanged);
-    //$('#kobold_api_model_context')
-    //  .val(extension_settings.koboldapi.context)
-    //  .on('input',onKoboldContextChanged)
-    //  .on('keyup',onNumbersOnly);
-    $('#kobold_api_model_reload').on('click', fetchKoboldModels);
-    //$('#kobold_api_apikey').on('input', onAPIKey);
-    //$('#kobold_api_apikey_clear').on('click', onClearAPIKey);
+
+    $('#kobold_api_url')
+        .val(extension_settings.koboldapi.url)
+        .on('input', onKoboldURLChanged);
+
+    // Buttons
+    $('#kobold_api_model_reload').on('click', () => fetchKoboldModels(true));
     $('#kobold_api_load_button').on('click', onModelLoad);
-    $('#kobold_api_unload_button').on('click', onModelUnload);    
+    $('#kobold_api_unload_button').on('click', onModelUnload);
 
+    // Autocomplete for load
     $('#kobold_api_model_list')
-    .val(extension_settings.koboldapi.model)
-    .autocomplete({
-        source: (_, response) => {
-            return response(kobold_models);
-        },
-        minLength: 0,
-    })
-    .focus(function () {
-        $(this)
-            .autocomplete(
-                'search',
-                $(this).val(),
-            );
-    });
+        .val(extension_settings.koboldapi.model)
+        .autocomplete({
+            source: (_, response) => response(kobold_models),
+            minLength: 0,
+        })
+        .focus(function () {
+            $(this).autocomplete('search', $(this).val());
+        });
 
+    // Autocomplete for unload
     $('#kobold_api_unload_list')
-    .val(extension_settings.koboldapi.unload)
-    .autocomplete({
-        source: (_, response) => {
-            return response(kobold_models);
-        },
-        minLength: 0,
-    })
-    .focus(function () {
-        $(this)
-            .autocomplete(
-                'search',
-                $(this).val(),
-            );
-    });
+        .val(extension_settings.koboldapi.unload)
+        .autocomplete({
+            source: (_, response) => response(kobold_models),
+            minLength: 0,
+        })
+        .focus(function () {
+            $(this).autocomplete('search', $(this).val());
+        });
 });
+
